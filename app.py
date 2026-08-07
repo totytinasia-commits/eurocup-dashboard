@@ -400,7 +400,7 @@ elif page == "Scrims 1":
     render_scrims_tables('547827980', "Scrims 1", s1_teams, s1_games, s1_summary, s1_overall)
 
 elif page == "Scrims 2":
-    s2_teams = (21, 29, 4) 
+    s2_teams = (20, 28, 4) 
     s2_games = [
         (20, 28, 5, 9),    
         (20, 28, 10, 14),    
