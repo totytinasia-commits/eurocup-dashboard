@@ -529,19 +529,35 @@ elif page == "PERSONAL STATS":
                 summary_mvp = format_val(row_vals[5] if len(row_vals) > 5 else 0)
                 summary_death = format_val(row_vals[6] if len(row_vals) > 6 else 0)
 
-            j17_l17 = target_ws.get("J17:L17")
-            if j17_l17 and len(j17_l17) > 0 and len(j17_l17[0]) > 0:
-                faster_banana_val = format_val(j17_l17[0][0])
+            if target_ws:
+            # 1. Match Summary (Riga 16)
+            f16_l16 = target_ws.get("F16:L16")
+            if f16_l16 and len(f16_l16) > 0:
+                row_vals = f16_l16[0]
+                summary_fired = format_val(row_vals[0] if len(row_vals) > 0 else 0)
+                summary_hit = format_val(row_vals[1] if len(row_vals) > 1 else 0)
+                summary_acc = format_val(row_vals[2] if len(row_vals) > 2 else 0, is_percentage=True)
+                summary_kill = format_val(row_vals[3] if len(row_vals) > 3 else 0)
+                summary_dmg = format_val(row_vals[4] if len(row_vals) > 4 else 0)
+                summary_mvp = format_val(row_vals[5] if len(row_vals) > 5 else 0)
+                summary_death = format_val(row_vals[6] if len(row_vals) > 6 else 0)
 
-            h19_l20 = target_ws.get("H19:L20")
-            if h19_l20 and len(h19_l20) > 0:
-                raw_w = h19_l20[0][0] if len(h19_l20[0]) > 0 else "-"
+            # 2. Faster Banana (Riga 18) -> la cella del valore è sulla colonna J (o l'intera riga 18)
+            j18_l18 = target_ws.get("J18:L18")
+            if j18_l18 and len(j18_l18) > 0 and len(j18_l18[0]) > 0:
+                faster_banana_val = format_val(j18_l18[0][0])
+
+            # 3. Deadliest Weapon (Righe 20-21)
+            h20_l21 = target_ws.get("H20:L21")
+            if h20_l21 and len(h20_l21) > 0:
+                raw_w = h20_l21[0][0] if len(h20_l21[0]) > 0 else "-"
                 deadliest_w = str(raw_w).strip() if raw_w and str(raw_w).strip().lower() not in ["nan", "none", ""] else "-"
                 
-                if len(h19_l20) > 1:
-                    deadliest_d = format_val(h19_l20[1][3] if len(h19_l20[1]) > 3 else 0)
-                    deadliest_a = format_val(h19_l20[1][4] if len(h19_l20[1]) > 4 else 0, is_percentage=True)
+                if len(h20_l21) > 1:
+                    deadliest_d = format_val(h20_l21[1][3] if len(h20_l21[1]) > 3 else 0)
+                    deadliest_a = format_val(h20_l21[1][4] if len(h20_l21[1]) > 4 else 0, is_percentage=True)
 
+            # 4. Tabella Armi (resta invariata da F27 in poi, o controlla se va spostata)
             weapons_raw = target_ws.get("F27:L67")
             if weapons_raw:
                 for r_data in weapons_raw:
