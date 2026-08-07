@@ -518,9 +518,9 @@ elif page == "PERSONAL STATS":
 
     try:
         if target_ws:
-            f15_l15 = target_ws.get("F15:L15")
-            if f15_l15 and len(f15_l15) > 0:
-                row_vals = f15_l15[0]
+            f16_l16 = target_ws.get("F16:L16")
+            if f16_l16 and len(f16_l16) > 0:
+                row_vals = f16_l16[0]
                 summary_fired = format_val(row_vals[0] if len(row_vals) > 0 else 0)
                 summary_hit = format_val(row_vals[1] if len(row_vals) > 1 else 0)
                 summary_acc = format_val(row_vals[2] if len(row_vals) > 2 else 0, is_percentage=True)
