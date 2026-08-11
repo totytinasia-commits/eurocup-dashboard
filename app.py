@@ -8,10 +8,9 @@ st.set_page_config(page_title="EuroCup Dashboard", layout="centered")
 
 # --- CONFIGURAZIONE GOOGLE SHEETS & CREDENZIALI ---
 SHEET_ID = '148tcAz14DpqYQV0ug5I1LmQuZ3AFrS0ebtl2-WPUIUY'
-GID_PERSONAL_STATS = '327527248' # Sostituisci con il GID corretto della scheda Personal Stats se diverso
+GID_PERSONAL_STATS = '327527248'
 
 def ottieni_credenziali():
-    """Recupera le credenziali da st.secrets per gspread"""
     try:
         if "gcp_service_account" in st.secrets:
             from google.oauth2.service_account import Credentials
@@ -26,7 +25,6 @@ def ottieni_credenziali():
     return None
 
 def scrivi_cella_per_gid(gid, cell_address, value):
-    """Scrive un valore in una cella specifica cercando il foglio tramite GID"""
     try:
         creds = ottieni_credenziali()
         if creds:
@@ -167,12 +165,23 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2.5 Pulsante di ritorno a Statbot App
-col_back1, col_back2, col_back3 = st.columns([1, 2, 1])
-with col_back2:
-    if st.button("🔙 Torna a Statbot App", use_container_width=True):
-        st.markdown('<meta http-equiv="refresh" content="0;url=https://statbotapp.uk/">', unsafe_allow_html=True)
-        st.success("Reindirizzamento a https://statbotapp.uk/ ...")
+# 2.5 Link diretto di Abbandono (HTML puro per forzare il reindirizzamento senza passare per i bottoni interni di Streamlit)
+st.markdown("""
+    <div style="text-align: center; margin-bottom: 15px;">
+        <a href="https://statbotapp.uk/" target="_self" style="
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            border: 1px solid #c0392b;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        ">🚀 Abbandona ed entra in Statbot App</a>
+    </div>
+""", unsafe_allow_html=True)
 
 st.write("")
 
@@ -454,7 +463,6 @@ elif page == "PERSONAL STATS":
     st.markdown("<div style='background-color: #0e1117; border: 2px solid #262730; border-radius: 12px; padding: 20px;'>", unsafe_allow_html=True)
     st.markdown("### 👤 Personal Stats Dashboard")
 
-    # Inizializzazione sicura delle variabili
     target_ws = None
     current_d13_val = ""
     extracted_players = []
@@ -467,12 +475,10 @@ elif page == "PERSONAL STATS":
             target_ws = next((ws for ws in sheet.worksheets() if str(ws.id).strip() == str(GID_PERSONAL_STATS).strip()), None)
             
             if target_ws:
-                # Legge il valore corrente dalla cella D13
                 d13_raw = target_ws.acell("D13").value
                 if d13_raw is not None and str(d13_raw).strip() != "":
                     current_d13_val = str(d13_raw).strip()
                 
-                # Estrae la lista dei player dalla colonna C (C12:C60)
                 col_c_values = target_ws.get("C12:C60")
                 for row in col_c_values:
                     if row and len(row) > 0:
@@ -486,14 +492,12 @@ elif page == "PERSONAL STATS":
     if not extracted_players:
         extracted_players = ["No players available"]
 
-    # Selectbox unico per il Player configurato in D13
     player_index = 0
     if current_d13_val in extracted_players:
         player_index = extracted_players.index(current_d13_val)
 
     selected_d13_val = st.selectbox("Select Player", extracted_players, index=player_index, key="sb_player_d13")
     
-    # Se il player selezionato cambia, aggiorna la cella D13 su Google Sheets e ricarica
     if str(selected_d13_val).strip().lower() != str(current_d13_val).strip().lower():
         scrivi_cella_per_gid(GID_PERSONAL_STATS, "D13", selected_d13_val)
         st.rerun()
@@ -527,7 +531,6 @@ elif page == "PERSONAL STATS":
 
     try:
         if target_ws:
-            # 1. Match Summary (Riga 16)
             f16_l16 = target_ws.get("F16:L16")
             if f16_l16 and len(f16_l16) > 0:
                 row_vals = f16_l16[0]
@@ -539,12 +542,10 @@ elif page == "PERSONAL STATS":
                 summary_mvp = format_val(row_vals[5] if len(row_vals) > 5 else 0)
                 summary_death = format_val(row_vals[6] if len(row_vals) > 6 else 0)
 
-            # 2. Faster Banana (Riga 18)
             j18_l18 = target_ws.get("J18:L18")
             if j18_l18 and len(j18_l18) > 0 and len(j18_l18[0]) > 0:
                 faster_banana_val = format_val(j18_l18[0][0])
 
-            # 3. Deadliest Weapon (Righe 20-21)
             h20_l21 = target_ws.get("H20:L21")
             if h20_l21 and len(h20_l21) > 0:
                 raw_w = h20_l21[0][0] if len(h20_l21[0]) > 0 else "-"
@@ -554,7 +555,6 @@ elif page == "PERSONAL STATS":
                     deadliest_d = format_val(h20_l21[1][3] if len(h20_l21[1]) > 3 else 0)
                     deadliest_a = format_val(h20_l21[1][4] if len(h20_l21[1]) > 4 else 0, is_percentage=True)
 
-            # 4. Tabella Armi
             weapons_raw = target_ws.get("F27:L67")
             if weapons_raw:
                 for r_data in weapons_raw:
