@@ -167,6 +167,15 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# 2.5 Pulsante di ritorno a Statbot App
+col_back1, col_back2, col_back3 = st.columns([1, 2, 1])
+with col_back2:
+    if st.button("🔙 Torna a Statbot App", use_container_width=True):
+        st.markdown('<meta http-equiv="refresh" content="0;url=https://statbotapp.uk/">', unsafe_allow_html=True)
+        st.success("Reindirizzamento a https://statbotapp.uk/ ...")
+
+st.write("")
+
 # 3. Logo
 col_l1, col_l2, col_l3 = st.columns([1, 10, 1])
 with col_l2:
