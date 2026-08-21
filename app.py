@@ -602,4 +602,3 @@ elif page == "PERSONAL STATS":
     st.dataframe(df_weapons_final, use_container_width=True, hide_index=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
-
