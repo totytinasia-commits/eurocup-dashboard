@@ -511,14 +511,13 @@ elif page == "PERSONAL STATS":
         except Exception:
             return str(val) if val is not None and str(val).strip() != "" else ("0.00%" if is_percentage else "0")
 
-    # Inizializzazione variabili Match Summary (14 campi totali ora)
+    # Inizializzazione variabili Match Summary (14 campi totali)
     summary_fired, summary_hit, summary_acc, summary_kill, summary_dmg, summary_mvp, summary_death = "0", "0", "0.00%", "0", "0", "0", "0"
     summary_revive, summary_oh_shots, summary_oh_hit, summary_oh_acc = "0", "0", "0", "0.00%"
     summary_th_shots, summary_th_hit, summary_th_acc = "0", "0", "0.00%"
     
     faster_banana_val = "-"
     
-    # Liste per le 3 armi letali (Deadliest Weapons)
     deadliest_weapons = []
     weapon_rows_data = []
 
@@ -543,20 +542,19 @@ elif page == "PERSONAL STATS":
                 summary_th_hit  = format_val(rv[12] if len(rv) > 12 else 0)
                 summary_th_acc  = format_val(rv[13] if len(rv) > 13 else 0, is_percentage=True)
 
-            # 2. Faster Banana (Riga 18) -> Adatta la cella se si è spostata a causa delle nuove colonne
+            # 2. Faster Banana (Riga 18)
             j18_l18 = target_ws.get("J18:L18")
             if j18_l18 and len(j18_l18) > 0 and len(j18_l18[0]) > 0:
                 faster_banana_val = format_val(j18_l18[0][0])
 
             # 3. Deadliest Weapons (Righe 20, 21, 22 per le 3 armi)
-            # Leggiamo il blocco da H20 a S22 per coprire nome arma, DMG, ACC%, Onehand/Twohand stats
             h20_s22 = target_ws.get("H20:S22")
             if h20_s22:
                 for idx_w, r_w in enumerate(h20_s22):
                     if r_w and len(r_w) > 0:
-                        w_name = str(r_w[1] if len(r_w) > 1 else "").strip() # Colonna I solitamente contiene il nome
+                        w_name = str(r_w[1] if len(r_w) > 1 else "").strip()
                         if not w_name or w_name.lower() in ["nan", "none", ""]:
-                            w_name = str(r_w[0]).strip() # Fallback su H se necessario
+                            w_name = str(r_w[0]).strip()
                         
                         deadliest_weapons.append({
                             "name": w_name if w_name and w_name.lower() not in ["nan", "none", ""] else "-",
@@ -570,8 +568,8 @@ elif page == "PERSONAL STATS":
                             "th_acc": format_val(r_w[12] if len(r_w) > 12 else 0, is_percentage=True)
                         })
 
-            # 4. Tabella Armi (F27 fino a S68)
-            weapons_raw = target_ws.get("F27:S68")
+            # 4. Tabella Armi aggiornata all'intervallo F33:S74
+            weapons_raw = target_ws.get("F33:S74")
             if weapons_raw:
                 for r_data in weapons_raw:
                     if r_data and len(r_data) > 0:
