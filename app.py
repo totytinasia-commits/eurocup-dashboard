@@ -547,26 +547,33 @@ elif page == "PERSONAL STATS":
             if j18_l18 and len(j18_l18) > 0 and len(j18_l18[0]) > 0:
                 faster_banana_val = format_val(j18_l18[0][0])
 
-            # 3. Deadliest Weapons (Righe 20, 21, 22 per le 3 armi)
-            h20_s22 = target_ws.get("H20:S22")
-            if h20_s22:
-                for idx_w, r_w in enumerate(h20_s22):
-                    if r_w and len(r_w) > 0:
-                        w_name = str(r_w[1] if len(r_w) > 1 else "").strip()
-                        if not w_name or w_name.lower() in ["nan", "none", ""]:
-                            w_name = str(r_w[0]).strip()
-                        
-                        deadliest_weapons.append({
-                            "name": w_name if w_name and w_name.lower() not in ["nan", "none", ""] else "-",
-                            "dmg": format_val(r_w[3] if len(r_w) > 3 else 0),
-                            "acc": format_val(r_w[4] if len(r_w) > 4 else 0, is_percentage=True),
-                            "oh_shots": format_val(r_w[6] if len(r_w) > 6 else 0),
-                            "oh_hit": format_val(r_w[7] if len(r_w) > 7 else 0),
-                            "oh_acc": format_val(r_w[8] if len(r_w) > 8 else 0, is_percentage=True),
-                            "th_shots": format_val(r_w[10] if len(r_w) > 10 else 0),
-                            "th_hit": format_val(r_w[11] if len(r_w) > 11 else 0),
-                            "th_acc": format_val(r_w[12] if len(r_w) > 12 else 0, is_percentage=True)
-                        })
+            # 3. Deadliest Weapons (Righe esatte: 21, 24, 27)
+            dw_ranges = ["H21:S21", "H24:S24", "H27:S27"]
+            for rng in dw_ranges:
+                r_data = target_ws.get(rng)
+                if r_data and len(r_data) > 0:
+                    r_w = r_data[0]
+                    w_name = str(r_w[1] if len(r_w) > 1 else "").strip()
+                    if not w_name or w_name.lower() in ["nan", "none", ""]:
+                        w_name = str(r_w[0]).strip()
+                    
+                    deadliest_weapons.append({
+                        "name": w_name if w_name and w_name.lower() not in ["nan", "none", ""] else "-",
+                        "dmg": format_val(r_w[3] if len(r_w) > 3 else 0),
+                        "acc": format_val(r_w[4] if len(r_w) > 4 else 0, is_percentage=True),
+                        "oh_shots": format_val(r_w[6] if len(r_w) > 6 else 0),
+                        "oh_hit": format_val(r_w[7] if len(r_w) > 7 else 0),
+                        "oh_acc": format_val(r_w[8] if len(r_w) > 8 else 0, is_percentage=True),
+                        "th_shots": format_val(r_w[10] if len(r_w) > 10 else 0),
+                        "th_hit": format_val(r_w[11] if len(r_w) > 11 else 0),
+                        "th_acc": format_val(r_w[12] if len(r_w) > 12 else 0, is_percentage=True)
+                    })
+                else:
+                    deadliest_weapons.append({
+                        "name": "-", "dmg": "0", "acc": "0.00%", 
+                        "oh_shots": "0", "oh_hit": "0", "oh_acc": "0.00%", 
+                        "th_shots": "0", "th_hit": "0", "th_acc": "0.00%"
+                    })
 
             # 4. Tabella Armi aggiornata all'intervallo F33:S74
             weapons_raw = target_ws.get("F33:S74")
@@ -620,11 +627,18 @@ elif page == "PERSONAL STATS":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- RENDER UI: DEADLIEST WEAPONS (1, 2, 3) ---
+    # --- RENDER UI: DEADLIEST WEAPONS (1, 2, 3) IN BOXES ---
     st.markdown("<h4 style='color: #93c5fd; font-size: 1rem;'>DEADLIEST WEAPONS</h4>", unsafe_allow_html=True)
     
     for i, dw in enumerate(deadliest_weapons):
-        st.markdown(f"<p style='color: #cbd5e1; font-weight: bold; margin-bottom: 5px;'>Weapon {i+1}: {dw['name']}</p>", unsafe_allow_html=True)
+        # Contenitore a box per ogni arma
+        st.markdown(f"""
+        <div style='background-color: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 15px; margin-bottom: 15px;'>
+            <p style='color: #93c5fd; font-weight: bold; font-size: 1.1rem; margin-top: 0; margin-bottom: 12px; text-align: center;'>
+                Deadliest Weapon {i+1}: {dw['name']}
+            </p>
+        """, unsafe_allow_html=True)
+        
         dw_col1, dw_col2, dw_col3, dw_col4 = st.columns(4)
         with dw_col1:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>DMG</div><div class='stat-value'>{dw['dmg']}</div></div>", unsafe_allow_html=True)
@@ -634,6 +648,8 @@ elif page == "PERSONAL STATS":
             st.markdown(f"<div class='stat-card'><div class='stat-label'>ONEHAND (H/S/ACC)</div><div class='stat-value' style='font-size:0.8rem;'>{dw['oh_hit']}/{dw['oh_shots']} ({dw['oh_acc']})</div></div>", unsafe_allow_html=True)
         with dw_col4:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>TWOHAND (H/S/ACC)</div><div class='stat-value' style='font-size:0.8rem;'>{dw['th_hit']}/{dw['th_shots']} ({dw['th_acc']})</div></div>", unsafe_allow_html=True)
+            
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
