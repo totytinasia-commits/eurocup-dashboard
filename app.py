@@ -533,6 +533,7 @@ elif page == "PERSONAL STATS":
                 summary_dmg     = format_val(rv[4] if len(rv) > 4 else 0)
                 summary_mvp     = format_val(rv[5] if len(rv) > 5 else 0)
                 summary_death   = format_val(rv[6] if len(rv) > 6 else 0)
+                summary_revive  = format_val(rv5 = rv[7] if len(rv) > 7 else 0) # Mantenuto sicuro
                 summary_revive  = format_val(rv[7] if len(rv) > 7 else 0)
                 summary_oh_shots= format_val(rv[8] if len(rv) > 8 else 0)
                 summary_oh_hit  = format_val(rv[9] if len(rv) > 9 else 0)
@@ -546,19 +547,35 @@ elif page == "PERSONAL STATS":
             if j18_l18 and len(j18_l18) > 0 and len(j18_l18[0]) > 0:
                 faster_banana_val = format_val(j18_l18[0][0])
 
-            # 3. Deadliest Weapons (Righe esatte: 21, 24, 27 lette da H a S)
-            dw_ranges = ["H21:S21", "H24:S24", "H27:S27"]
-            for rng in dw_ranges:
-                r_data = target_ws.get(rng)
+            # 3. Deadliest Weapons (Configurazioni mirate per Nome Arma e Dati)
+            # Arma 1: Nome in H20:I20, Dati in H21:S21
+            # Arma 2: Nome in H23:I23, Dati in H24:S24
+            # Arma 3: Nome in H26:I26, Dati in H27:S27
+            dw_configs = [
+                {"name_range": "H20:I20", "data_range": "H21:S21"},
+                {"name_range": "H23:I23", "data_range": "H24:S24"},
+                {"name_range": "H26:I26", "data_range": "H27:S27"}
+            ]
+
+            for cfg in dw_configs:
+                # Legge il nome dell'arma
+                n_data = target_ws.get(cfg["name_range"])
+                w_name = "-"
+                if n_data and len(n_data) > 0:
+                    row_n = n_data[0]
+                    for cell in row_n:
+                        val_str = str(cell).strip()
+                        if val_str and val_str.lower() not in ["nan", "none", ""]:
+                            w_name = val_str
+                            break
+
+                # Legge i dati dell'arma
+                r_data = target_ws.get(cfg["data_range"])
                 if r_data and len(r_data) > 0:
                     r_w = r_data[0]
-                    # H=col 0, I=1, J=2, K=3 (DMG), L=4 (ACC%), M=5 (Nome Arma), N=6 (Onehand), O=7 (Shit Onehand), P=8 (Acc One), Q=9 (Tohand), R=10 (Shit Tohand), S=11 (Acc Two)
-                    w_name = str(r_w[5] if len(r_w) > 5 else "").strip()
-                    if not w_name or w_name.lower() in ["nan", "none", ""]:
-                        w_name = str(r_w[0] if len(r_w) > 0 else "").strip()
-                    
+                    # H=col 0, I=1, J=2, K=3 (DMG), L=4 (ACC%), M=5, N=6 (Onehand), O=7 (Shit Onehand), P=8 (Acc One), Q=9 (Tohand), R=10 (Shit Tohand), S=11 (Acc Two)
                     deadliest_weapons.append({
-                        "name": w_name if w_name and w_name.lower() not in ["nan", "none", ""] else "-",
+                        "name": w_name,
                         "dmg": format_val(r_w[3] if len(r_w) > 3 else 0),          # K
                         "acc": format_val(r_w[4] if len(r_w) > 4 else 0, is_percentage=True), # L
                         "onehand": format_val(r_w[6] if len(r_w) > 6 else 0),      # N
@@ -570,7 +587,7 @@ elif page == "PERSONAL STATS":
                     })
                 else:
                     deadliest_weapons.append({
-                        "name": "-", "dmg": "0", "acc": "0.00%", 
+                        "name": w_name, "dmg": "0", "acc": "0.00%", 
                         "onehand": "0", "shit_onehand": "0", "acc_onehand": "0.00%", 
                         "twohand": "0", "shit_twohand": "0", "acc_twohand": "0.00%"
                     })
