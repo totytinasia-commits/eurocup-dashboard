@@ -437,7 +437,6 @@ elif page == "Risultati Giocatore":
         st.markdown(render_custom_table(lobby2_df, headers_player), unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Error loading Lobby 2 Player Data: {e}")
-    
 # ==========================================
 # --- SEZIONE: PERSONAL STATS ---
 # ==========================================
@@ -553,26 +552,28 @@ elif page == "PERSONAL STATS":
                 r_data = target_ws.get(rng)
                 if r_data and len(r_data) > 0:
                     r_w = r_data[0]
-                    w_name = str(r_w[1] if len(r_w) > 1 else "").strip()
+                    # Basato sull'immagine: Nome arma in indice 5 (colonna M circa o intestazione)
+                    # Verifichiamo la posizione corretta in base alla struttura della tabella:
+                    w_name = str(r_w[5] if len(r_w) > 5 else "").strip()
                     if not w_name or w_name.lower() in ["nan", "none", ""]:
-                        w_name = str(r_w[0]).strip()
+                        w_name = str(r_w[0] if len(r_w) > 0 else "").strip()
                     
                     deadliest_weapons.append({
                         "name": w_name if w_name and w_name.lower() not in ["nan", "none", ""] else "-",
-                        "dmg": format_val(r_w[3] if len(r_w) > 3 else 0),
-                        "acc": format_val(r_w[4] if len(r_w) > 4 else 0, is_percentage=True),
-                        "oh_shots": format_val(r_w[6] if len(r_w) > 6 else 0),
-                        "oh_hit": format_val(r_w[7] if len(r_w) > 7 else 0),
-                        "oh_acc": format_val(r_w[8] if len(r_w) > 8 else 0, is_percentage=True),
-                        "th_shots": format_val(r_w[10] if len(r_w) > 10 else 0),
-                        "th_hit": format_val(r_w[11] if len(r_w) > 11 else 0),
-                        "th_acc": format_val(r_w[12] if len(r_w) > 12 else 0, is_percentage=True)
+                        "dmg": format_val(r_w[7] if len(r_w) > 7 else 0),          # DMG
+                        "acc": format_val(r_w[8] if len(r_w) > 8 else 0, is_percentage=True), # ACC%
+                        "onehand": format_val(r_w[9] if len(r_w) > 9 else 0),      # ONEHAND (shots)
+                        "shit_onehand": format_val(r_w[10] if len(r_w) > 10 else 0),# SHIT ONEHAND (hits)
+                        "acc_onehand": format_val(r_w[11] if len(r_w) > 11 else 0, is_percentage=True), # ACC% ONE
+                        "twohand": format_val(r_w[12] if len(r_w) > 12 else 0),    # TWOHAND (shots)
+                        "shit_twohand": format_val(r_w[13] if len(r_w) > 13 else 0),# SHIT TWOHAND (hits)
+                        "acc_twohand": format_val(r_w[14] if len(r_w) > 14 else 0, is_percentage=True)  # ACC% TWO
                     })
                 else:
                     deadliest_weapons.append({
                         "name": "-", "dmg": "0", "acc": "0.00%", 
-                        "oh_shots": "0", "oh_hit": "0", "oh_acc": "0.00%", 
-                        "th_shots": "0", "th_hit": "0", "th_acc": "0.00%"
+                        "onehand": "0", "shit_onehand": "0", "acc_onehand": "0.00%", 
+                        "twohand": "0", "shit_twohand": "0", "acc_twohand": "0.00%"
                     })
 
             # 4. Tabella Armi aggiornata all'intervallo F33:S74
@@ -631,7 +632,6 @@ elif page == "PERSONAL STATS":
     st.markdown("<h4 style='color: #93c5fd; font-size: 1rem;'>DEADLIEST WEAPONS</h4>", unsafe_allow_html=True)
     
     for i, dw in enumerate(deadliest_weapons):
-        # Contenitore a box per ogni arma
         st.markdown(f"""
         <div style='background-color: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 15px; margin-bottom: 15px;'>
             <p style='color: #93c5fd; font-weight: bold; font-size: 1.1rem; margin-top: 0; margin-bottom: 12px; text-align: center;'>
@@ -639,15 +639,20 @@ elif page == "PERSONAL STATS":
             </p>
         """, unsafe_allow_html=True)
         
+        # Suddivisione in metriche pulite per gli 8 campi dell'arma
         dw_col1, dw_col2, dw_col3, dw_col4 = st.columns(4)
         with dw_col1:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>DMG</div><div class='stat-value'>{dw['dmg']}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>ONEHAND</div><div class='stat-value'>{dw['onehand']}</div></div>", unsafe_allow_html=True)
         with dw_col2:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>ACC%</div><div class='stat-value'>{dw['acc']}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>SHIT ONEHAND</div><div class='stat-value'>{dw['shit_onehand']}</div></div>", unsafe_allow_html=True)
         with dw_col3:
-            st.markdown(f"<div class='stat-card'><div class='stat-label'>ONEHAND (H/S/ACC)</div><div class='stat-value' style='font-size:0.8rem;'>{dw['oh_hit']}/{dw['oh_shots']} ({dw['oh_acc']})</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='stat-card'><div class='stat-label'>ACC% ONE</div><div class='stat-value'>{dw['acc_onehand']}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>TWOHAND</div><div class='stat-value'>{dw['twohand']}</div></div>", unsafe_allow_html=True)
         with dw_col4:
-            st.markdown(f"<div class='stat-card'><div class='stat-label'>TWOHAND (H/S/ACC)</div><div class='stat-value' style='font-size:0.8rem;'>{dw['th_hit']}/{dw['th_shots']} ({dw['th_acc']})</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='stat-card'><div class='stat-label'>SHIT TWOHAND</div><div class='stat-value'>{dw['shit_twohand']}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>ACC% TWO</div><div class='stat-value'>{dw['acc_twohand']}</div></div>", unsafe_allow_html=True)
             
         st.markdown("</div>", unsafe_allow_html=True)
 
