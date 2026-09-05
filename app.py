@@ -533,7 +533,6 @@ elif page == "PERSONAL STATS":
                 summary_dmg     = format_val(rv[4] if len(rv) > 4 else 0)
                 summary_mvp     = format_val(rv[5] if len(rv) > 5 else 0)
                 summary_death   = format_val(rv[6] if len(rv) > 6 else 0)
-                summary_revive  = format_val(rv5 = rv[7] if len(rv) > 7 else 0) # Mantenuto sicuro
                 summary_revive  = format_val(rv[7] if len(rv) > 7 else 0)
                 summary_oh_shots= format_val(rv[8] if len(rv) > 8 else 0)
                 summary_oh_hit  = format_val(rv[9] if len(rv) > 9 else 0)
@@ -548,9 +547,6 @@ elif page == "PERSONAL STATS":
                 faster_banana_val = format_val(j18_l18[0][0])
 
             # 3. Deadliest Weapons (Configurazioni mirate per Nome Arma e Dati)
-            # Arma 1: Nome in H20:I20, Dati in H21:S21
-            # Arma 2: Nome in H23:I23, Dati in H24:S24
-            # Arma 3: Nome in H26:I26, Dati in H27:S27
             dw_configs = [
                 {"name_range": "H20:I20", "data_range": "H21:S21"},
                 {"name_range": "H23:I23", "data_range": "H24:S24"},
