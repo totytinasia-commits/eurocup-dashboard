@@ -546,28 +546,27 @@ elif page == "PERSONAL STATS":
             if j18_l18 and len(j18_l18) > 0 and len(j18_l18[0]) > 0:
                 faster_banana_val = format_val(j18_l18[0][0])
 
-            # 3. Deadliest Weapons (Righe esatte: 21, 24, 27)
+            # 3. Deadliest Weapons (Righe esatte: 21, 24, 27 lette da H a S)
             dw_ranges = ["H21:S21", "H24:S24", "H27:S27"]
             for rng in dw_ranges:
                 r_data = target_ws.get(rng)
                 if r_data and len(r_data) > 0:
                     r_w = r_data[0]
-                    # Basato sull'immagine: Nome arma in indice 5 (colonna M circa o intestazione)
-                    # Verifichiamo la posizione corretta in base alla struttura della tabella:
+                    # H=col 0, I=1, J=2, K=3 (DMG), L=4 (ACC%), M=5 (Nome Arma), N=6 (Onehand), O=7 (Shit Onehand), P=8 (Acc One), Q=9 (Tohand), R=10 (Shit Tohand), S=11 (Acc Two)
                     w_name = str(r_w[5] if len(r_w) > 5 else "").strip()
                     if not w_name or w_name.lower() in ["nan", "none", ""]:
                         w_name = str(r_w[0] if len(r_w) > 0 else "").strip()
                     
                     deadliest_weapons.append({
                         "name": w_name if w_name and w_name.lower() not in ["nan", "none", ""] else "-",
-                        "dmg": format_val(r_w[7] if len(r_w) > 7 else 0),          # DMG
-                        "acc": format_val(r_w[8] if len(r_w) > 8 else 0, is_percentage=True), # ACC%
-                        "onehand": format_val(r_w[9] if len(r_w) > 9 else 0),      # ONEHAND (shots)
-                        "shit_onehand": format_val(r_w[10] if len(r_w) > 10 else 0),# SHIT ONEHAND (hits)
-                        "acc_onehand": format_val(r_w[11] if len(r_w) > 11 else 0, is_percentage=True), # ACC% ONE
-                        "twohand": format_val(r_w[12] if len(r_w) > 12 else 0),    # TWOHAND (shots)
-                        "shit_twohand": format_val(r_w[13] if len(r_w) > 13 else 0),# SHIT TWOHAND (hits)
-                        "acc_twohand": format_val(r_w[14] if len(r_w) > 14 else 0, is_percentage=True)  # ACC% TWO
+                        "dmg": format_val(r_w[3] if len(r_w) > 3 else 0),          # K
+                        "acc": format_val(r_w[4] if len(r_w) > 4 else 0, is_percentage=True), # L
+                        "onehand": format_val(r_w[6] if len(r_w) > 6 else 0),      # N
+                        "shit_onehand": format_val(r_w[7] if len(r_w) > 7 else 0),# O
+                        "acc_onehand": format_val(r_w[8] if len(r_w) > 8 else 0, is_percentage=True), # P
+                        "twohand": format_val(r_w[9] if len(r_w) > 9 else 0),    # Q
+                        "shit_twohand": format_val(r_w[10] if len(r_w) > 10 else 0),# R
+                        "acc_twohand": format_val(r_w[11] if len(r_w) > 11 else 0, is_percentage=True)  # S
                     })
                 else:
                     deadliest_weapons.append({
@@ -639,20 +638,34 @@ elif page == "PERSONAL STATS":
             </p>
         """, unsafe_allow_html=True)
         
-        # Suddivisione in metriche pulite per gli 8 campi dell'arma
-        dw_col1, dw_col2, dw_col3, dw_col4 = st.columns(4)
-        with dw_col1:
+        # 1ª Riga: DMG e ACC%
+        dw_r1_c1, dw_r1_c2 = st.columns(2)
+        with dw_r1_c1:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>DMG</div><div class='stat-value'>{dw['dmg']}</div></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>ONEHAND</div><div class='stat-value'>{dw['onehand']}</div></div>", unsafe_allow_html=True)
-        with dw_col2:
+        with dw_r1_c2:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>ACC%</div><div class='stat-value'>{dw['acc']}</div></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>SHIT ONEHAND</div><div class='stat-value'>{dw['shit_onehand']}</div></div>", unsafe_allow_html=True)
-        with dw_col3:
+
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+
+        # 2ª Riga: ONEHAND, SHIT ONEHAND, ACC% ONE
+        dw_r2_c1, dw_r2_c2, dw_r2_c3 = st.columns(3)
+        with dw_r2_c1:
+            st.markdown(f"<div class='stat-card'><div class='stat-label'>ONEHAND</div><div class='stat-value'>{dw['onehand']}</div></div>", unsafe_allow_html=True)
+        with dw_r2_c2:
+            st.markdown(f"<div class='stat-card'><div class='stat-label'>SHIT ONEHAND</div><div class='stat-value'>{dw['shit_onehand']}</div></div>", unsafe_allow_html=True)
+        with dw_r2_c3:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>ACC% ONE</div><div class='stat-value'>{dw['acc_onehand']}</div></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>TWOHAND</div><div class='stat-value'>{dw['twohand']}</div></div>", unsafe_allow_html=True)
-        with dw_col4:
+
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+
+        # 3ª Riga: TWOHAND, SHIT TWOHAND, ACC% TWO
+        dw_r3_c1, dw_r3_c2, dw_r3_c3 = st.columns(3)
+        with dw_r3_c1:
+            st.markdown(f"<div class='stat-card'><div class='stat-label'>TWOHAND</div><div class='stat-value'>{dw['twohand']}</div></div>", unsafe_allow_html=True)
+        with dw_r3_c2:
             st.markdown(f"<div class='stat-card'><div class='stat-label'>SHIT TWOHAND</div><div class='stat-value'>{dw['shit_twohand']}</div></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='stat-card' style='margin-top:10px;'><div class='stat-label'>ACC% TWO</div><div class='stat-value'>{dw['acc_twohand']}</div></div>", unsafe_allow_html=True)
+        with dw_r3_c3:
+            st.markdown(f"<div class='stat-card'><div class='stat-label'>ACC% TWO</div><div class='stat-value'>{dw['acc_twohand']}</div></div>", unsafe_allow_html=True)
             
         st.markdown("</div>", unsafe_allow_html=True)
 
